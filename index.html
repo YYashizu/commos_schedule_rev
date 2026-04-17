@@ -3,25 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>販促スケジュール 逆算計算</title>
+<title>セミナー販促スケジュール（逆算）</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
-    background: #ffffff;
-    color: #1a1a1a;
-    padding: 20px 16px 32px;
-    font-size: 14px;
+    background: #ffffff; color: #1a1a1a;
+    padding: 20px 16px 32px; font-size: 14px;
   }
   h1 { font-size: 15px; font-weight: 500; color: #555; margin-bottom: 4px; }
   .subtitle { font-size: 11px; color: #aaa; margin-bottom: 16px; }
   .input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
   .input-row label { font-size: 13px; color: #666; white-space: nowrap; }
-  input[type="date"] {
-    font-size: 13px; padding: 6px 10px;
-    border: 1px solid #ddd; border-radius: 6px;
-    background: #fff; color: #1a1a1a; outline: none;
-  }
+  input[type="date"] { font-size: 13px; padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #1a1a1a; outline: none; }
   input[type="date"]:focus { border-color: #888; }
   .toggle-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; cursor: pointer; }
   .toggle-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -33,7 +27,7 @@
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead tr { border-bottom: 1.5px solid #e0e0e0; }
-  th { font-size: 11px; font-weight: 500; color: #999; text-align: left; padding: 6px 10px; letter-spacing: 0.05em; white-space: nowrap; }
+  th { font-size: 11px; font-weight: 500; color: #999; text-align: left; padding: 6px 10px; white-space: nowrap; }
   td { padding: 10px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr.milestone { background: #fffbf0; }
@@ -55,7 +49,7 @@
 </head>
 <body>
 
-<h1>販促スケジュール 逆算計算</h1>
+<h1>セミナー販促スケジュール（逆算）</h1>
 <p class="subtitle">セミナー開催日を入力すると、各工程のデッドラインを自動計算します</p>
 
 <div class="input-row">
@@ -75,7 +69,7 @@
       <tr>
         <th style="width:36px;">工程</th>
         <th>内容</th>
-        <th style="min-width:140px;">デッドライン根拠</th>
+        <th style="min-width:150px;">デッドライン根拠</th>
         <th style="min-width:110px;">デッドライン</th>
         <th style="min-width:48px;">曜日</th>
       </tr>
@@ -104,14 +98,14 @@ var BADGE_STYLES = [
 ];
 
 var STEPS = [
-  { id: 'A', name: '企画概要確定',           rule: 'Bの3営業日前',   milestone: false },
-  { id: 'B', name: 'チラシ・バナー初稿',     rule: 'Cの2営業日前',   milestone: false },
-  { id: 'C', name: 'チラシ・バナー内容確定', rule: 'Dの5営業日前',   milestone: false },
-  { id: 'D', name: 'チラシBGJ納品',          rule: 'Gの4営業日前',   milestone: false },
-  { id: 'E', name: 'META出稿',               rule: 'Cから2営業日後', milestone: false },
-  { id: 'F', name: 'LINE投稿設定',           rule: 'Cから2営業日後', milestone: false },
-  { id: 'G', name: 'チラシディーラー到着',   rule: 'Hの3週間前',     milestone: false },
-  { id: 'H', name: 'セミナー開催',           rule: '（起点）',       milestone: true  }
+  { id: 'A', name: '企画概要確定',          rule: 'Bの3営業日前',   milestone: false },
+  { id: 'B', name: 'チラシ・バナー初稿',    rule: 'Cの2営業日前',   milestone: false },
+  { id: 'C', name: 'チラシ・バナー内容確定',rule: 'Dの8営業日前',   milestone: false },
+  { id: 'D', name: 'チラシBGJ納品',         rule: 'Gの4営業日前',   milestone: false },
+  { id: 'E', name: 'META出稿・ササキ砲',    rule: 'Cから2営業日後', milestone: false },
+  { id: 'F', name: 'LINE投稿設定',          rule: 'Cから2営業日後', milestone: false },
+  { id: 'G', name: 'チラシディーラー到着',  rule: 'Hの3週間前',     milestone: false },
+  { id: 'H', name: 'セミナー開催',          rule: '（起点）',       milestone: true  }
 ];
 
 function getSkipSat() { return document.getElementById('skipSat').checked; }
@@ -170,7 +164,7 @@ function calcDates(seminarStr) {
   d.H = new Date(seminarStr);
   d.G = subWeeks(d.H, 3);
   d.D = subBiz(d.G, 4);
-  d.C = subBiz(d.D, 5);
+  d.C = subBiz(d.D, 8);
   d.E = addBiz(d.C, 2);
   d.F = addBiz(d.C, 2);
   d.B = subBiz(d.C, 2);
@@ -222,30 +216,21 @@ function render() {
 
     var td1 = document.createElement('td');
     td1.innerHTML = '<span class="badge" style="background:' + bs.bg + ';color:' + bs.color + ';">' + step.id + '</span>';
-
     var td2 = document.createElement('td');
     td2.innerHTML = '<div class="step-name">' + step.name + '</div>';
-
     var td3 = document.createElement('td');
     td3.innerHTML = '<span class="step-rule">' + step.rule + '</span>';
-
     var td4 = document.createElement('td');
     if (d) {
       td4.innerHTML = '<span class="' + dateClass + '">' + fmt(d) + '</span>' + (isPast ? '<span class="dl-badge">期限超過</span>' : '');
     } else {
       td4.innerHTML = '<span style="color:#ccc;">—</span>';
     }
-
     var td5 = document.createElement('td');
-    if (d) {
-      td5.innerHTML = '<span class="dow-badge ' + dowClass + '">' + dow + '</span>';
-    }
+    td5.innerHTML = d ? '<span class="dow-badge ' + dowClass + '">' + dow + '</span>' : '';
 
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tr.appendChild(td3);
-    tr.appendChild(td4);
-    tr.appendChild(td5);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+    tr.appendChild(td4); tr.appendChild(td5);
     tbody.appendChild(tr);
   }
 
@@ -261,7 +246,6 @@ function render() {
 document.getElementById('seminarDate').addEventListener('change', render);
 document.getElementById('skipSat').addEventListener('change', render);
 document.getElementById('skipSun').addEventListener('change', render);
-
 render();
 </script>
 </body>
